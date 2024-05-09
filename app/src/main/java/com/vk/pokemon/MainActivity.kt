@@ -42,19 +42,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val mainViewModel: PokemonViewModel by viewModels()
         val loadThreshold = 10
+        var start = 1
         setContent {
             val pokemons by mainViewModel.pokemons.collectAsState()
-            mainViewModel.fetchPokemons(loadThreshold)
+            mainViewModel.fetchPokemons(loadThreshold, start)
+            start += loadThreshold
             Surface(
                 modifier = Modifier
                     .background(background)
                     .padding(horizontal = 15.dp)
-                    .fillMaxSize()
             ) {
                 LazyColumn(modifier = Modifier.background(background).padding(bottom = 5.dp)) {
                     items(pokemons.size) {
                         if (it >= pokemons.size - loadThreshold) {
-                            mainViewModel.fetchPokemons(loadThreshold)
+                            mainViewModel.fetchPokemons(loadThreshold, start)
+                            start += loadThreshold
                         }
                         Spacer(
                             modifier = Modifier
@@ -117,27 +119,16 @@ class MainActivity : ComponentActivity() {
                         fontStyle = FontStyle.Italic
                     )
                 }
-                Column(
+                Text(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .align(Alignment.CenterVertically)
-                ) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "${pokemon.baseExperience}",
-                        fontSize = 40.sp,
-                        color = Color.Blue,
-                        textAlign = TextAlign.Center
-                    )
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "Exp",
-                        fontSize = 16.sp,
-                        fontStyle = FontStyle.Italic,
-                        color = Color.Blue,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                        .fillMaxSize()
+                        .padding(end=10.dp),
+                    text = "${pokemon.baseExperience}",
+                    fontSize = 35.sp,
+                    color = Color.Blue,
+                    textAlign = TextAlign.End
+                )
             }
         }
     }

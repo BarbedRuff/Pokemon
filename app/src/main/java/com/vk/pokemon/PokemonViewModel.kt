@@ -15,9 +15,8 @@ import kotlinx.coroutines.launch
 class PokemonViewModel: ViewModel() {
     private val _pokemons = MutableStateFlow(listOf<Pokemon>())
     private val repository = PokemonRepository()
-    private var start = 1
     var pokemons = _pokemons.asStateFlow()
-    fun fetchPokemons(listSize: Int){
+    fun fetchPokemons(listSize: Int, start: Int){
         viewModelScope.launch {
             repository.getPokemons(listSize, start)
                 .flowOn(Dispatchers.IO)
@@ -28,7 +27,6 @@ class PokemonViewModel: ViewModel() {
                     val pokemonsList = _pokemons.value.toMutableList()
                     pokemonsList.addAll(it)
                     _pokemons.value = pokemonsList.toList()
-                    start += listSize
                 }
         }
     }
