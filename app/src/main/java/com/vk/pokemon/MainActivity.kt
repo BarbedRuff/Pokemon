@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.vk.pokemon.model.Pokemon
+import com.vk.pokemon.ui.theme.background
+import com.vk.pokemon.ui.theme.card
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,11 +47,11 @@ class MainActivity : ComponentActivity() {
             mainViewModel.fetchPokemons(loadThreshold)
             Surface(
                 modifier = Modifier
-                    .background(Color(0xFFC2DED1))
+                    .background(background)
                     .padding(horizontal = 15.dp)
                     .fillMaxSize()
             ) {
-                LazyColumn(modifier = Modifier.background(Color(0xFFC2DED1)).padding(bottom = 5.dp)) {
+                LazyColumn(modifier = Modifier.background(background).padding(bottom = 5.dp)) {
                     items(pokemons.size) {
                         if (it >= pokemons.size - loadThreshold) {
                             mainViewModel.fetchPokemons(loadThreshold)
@@ -57,8 +59,7 @@ class MainActivity : ComponentActivity() {
                         Spacer(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(5.dp)
-                                .background(Color(0xFFC2DED1))
+                                .height(20.dp)
                         )
                         PokemonCard(pokemons[it])
                     }
@@ -77,9 +78,9 @@ class MainActivity : ComponentActivity() {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFC2DED1),),
+                .background(background),
             colors = CardDefaults.cardColors(
-                containerColor = Color(0xFFECE5C7),
+                containerColor = card,
             )
         ) {
             Row(
@@ -96,7 +97,7 @@ class MainActivity : ComponentActivity() {
                 )
                 Column(
                     modifier = Modifier
-                        .padding(start = 10.dp)
+                        .padding(start = 5.dp)
                         .align(Alignment.CenterVertically)
                 )
                 {
@@ -119,12 +120,12 @@ class MainActivity : ComponentActivity() {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.Top)
+                        .align(Alignment.CenterVertically)
                 ) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = "${pokemon.baseExperience}",
-                        fontSize = 50.sp,
+                        fontSize = 40.sp,
                         color = Color.Blue,
                         textAlign = TextAlign.Center
                     )
