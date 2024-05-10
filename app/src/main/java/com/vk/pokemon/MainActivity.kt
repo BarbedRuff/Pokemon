@@ -30,7 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,6 +43,9 @@ import com.vk.pokemon.ui.theme.background
 import com.vk.pokemon.ui.theme.card
 
 class MainActivity : ComponentActivity() {
+     val itimFamily = FontFamily(
+         Font(R.font.itim_regular, FontWeight.Normal)
+     )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val mainViewModel: PokemonViewModel by viewModels()
@@ -75,7 +79,7 @@ class MainActivity : ComponentActivity() {
                         }
                         PokemonCard(pokemons[it])
                     }
-                    item{ Spacer(modifier = Modifier.fillMaxWidth().height(15.dp)) }
+                    item{ Spacer(modifier = Modifier.fillMaxWidth().height(25.dp)) }
                 }
             }
         }
@@ -92,7 +96,7 @@ class MainActivity : ComponentActivity() {
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(15.dp)
+                .height(25.dp)
         )
         Card(
             shape = RoundedCornerShape(20.dp),
@@ -129,18 +133,18 @@ class MainActivity : ComponentActivity() {
                 {
                     Text(
                         text = pokemon.name,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
+                        fontSize = 23.sp,
+                        fontFamily = itimFamily
                     )
                     Text(
                         text = "height: ${pokemon.height} decimetres",
-                        fontSize = 14.sp,
-                        fontStyle = FontStyle.Italic
+                        fontSize = 16.sp,
+                        fontFamily = itimFamily
                     )
                     Text(
                         text = "weight: ${pokemon.weight} hectograms",
-                        fontSize = 14.sp,
-                        fontStyle = FontStyle.Italic
+                        fontSize = 16.sp,
+                        fontFamily = itimFamily
                     )
                 }
                 Text(
@@ -149,7 +153,8 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .padding(end = 10.dp),
                     text = "${pokemon.baseExperience}",
-                    fontSize = 35.sp,
+                    fontFamily = itimFamily,
+                    fontSize = 30.sp,
                     color = Color.Blue,
                     textAlign = TextAlign.End
                 )

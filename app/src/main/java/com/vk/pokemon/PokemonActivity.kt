@@ -23,9 +23,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,6 +45,9 @@ import com.vk.pokemon.ui.theme.progressBarFill
 import com.vk.pokemon.ui.theme.statCard
 
 class PokemonActivity : ComponentActivity() {
+    private val itimFamily = FontFamily(
+        Font(R.font.itim_regular, FontWeight.Normal)
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val pokemon = intent.extras?.getSerializable("pokemon") as Pokemon
@@ -72,6 +82,7 @@ class PokemonActivity : ComponentActivity() {
                     modifier = Modifier
                         .fillMaxWidth(),
                     text = pokemon.name,
+                    fontFamily = itimFamily,
                     fontSize = 30.sp,
                     textAlign = TextAlign.Center
                 )
@@ -101,6 +112,7 @@ class PokemonActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxWidth(),
                         text= "Height",
+                        fontFamily = itimFamily,
                         fontSize = 25.sp,
                         textAlign = TextAlign.Center
                     )
@@ -108,6 +120,7 @@ class PokemonActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxWidth(),
                         text= "${pokemon.height}",
+                        fontFamily = itimFamily,
                         fontSize = 20.sp,
                         textAlign = TextAlign.Center
                     )
@@ -120,6 +133,7 @@ class PokemonActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxWidth(),
                         text= "Weight",
+                        fontFamily = itimFamily,
                         fontSize = 25.sp,
                         textAlign = TextAlign.Center
                     )
@@ -127,6 +141,7 @@ class PokemonActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxWidth(),
                         text= "${pokemon.weight}",
+                        fontFamily = itimFamily,
                         fontSize = 20.sp,
                         textAlign = TextAlign.Center
                     )
@@ -138,6 +153,7 @@ class PokemonActivity : ComponentActivity() {
                     .fillMaxWidth(),
                 text="Base experience",
                 textAlign = TextAlign.Center,
+                fontFamily = itimFamily,
                 fontSize = 25.sp
             )
             Text(
@@ -145,6 +161,7 @@ class PokemonActivity : ComponentActivity() {
                     .padding(bottom = 25.dp)
                     .fillMaxWidth(),
                 text="${pokemon.baseExperience}",
+                fontFamily = itimFamily,
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp
             )
@@ -153,7 +170,8 @@ class PokemonActivity : ComponentActivity() {
 
     @Composable
     fun StatsCard(pokemon: Pokemon) {
-        Log.d("stats", pokemon.stats.joinToString(" "))
+        var componentWeight = remember { mutableStateOf(0.dp) }
+        val density = LocalDensity.current
         val statsLabel = listOf("Hp", "Attack", "Defense", "Special attack", "Special defense", "Speed")
         Card(
             shape = RoundedCornerShape(20.dp),
@@ -169,6 +187,7 @@ class PokemonActivity : ComponentActivity() {
                 modifier = Modifier
                     .padding(top = 15.dp, start = 10.dp),
                 text="Stats",
+                fontFamily = itimFamily,
                 fontSize = 25.sp
             )
             Column(
@@ -178,24 +197,30 @@ class PokemonActivity : ComponentActivity() {
                     Row{
                         Box(modifier=Modifier
                             .height(20.dp)
-                            .weight(0.6f)
+                            .weight(0.5f)
                             .fillMaxWidth()
                             .align(Alignment.CenterVertically)
                             .background(progressBarBackground)
+                            .onGloballyPositioned {
+                                componentWeight.value = with(density) {
+                                    it.size.width.toDp()
+                                }
+                            }
                         ){
                             Box(modifier=Modifier
                                 .fillMaxHeight()
-                                .width(230.dp * pokemon.stats[i])
+                                .width(componentWeight.value * pokemon.stats[i])
                                 .background(progressBarFill)
                             )
                         }
                         Text(
-                            modifier=Modifier.weight(0.4f).padding(start=5.dp),
+                            modifier=Modifier.weight(0.5f).padding(start=5.dp),
                             text = statsLabel[i],
+                            fontFamily = itimFamily,
                             fontSize = 20.sp
                         )
                     }
-                    Spacer(modifier=Modifier.height(15.dp))
+                    Spacer(modifier=Modifier.height(10.dp))
                 }
             }
         }
