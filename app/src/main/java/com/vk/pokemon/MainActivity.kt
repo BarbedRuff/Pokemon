@@ -1,6 +1,7 @@
 package com.vk.pokemon
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -36,7 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import com.vk.pokemon.model.Pokemon
 import com.vk.pokemon.ui.theme.background
@@ -62,24 +67,30 @@ class MainActivity : ComponentActivity() {
                     .padding(horizontal = 15.dp)
                     .fillMaxSize()
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .background(background)
-                ) {
-                    items(pokemons.size) {
-                        if (it >= pokemons.size - loadThreshold) {
-                            if(!requestIsSend){
-                                mainViewModel.fetchPokemons(loadThreshold, start)
-                                start += loadThreshold
-                                requestIsSend = true
+                if(pokemons.isNotEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .background(background)
+                    ) {
+                        items(pokemons.size) {
+                            if (it >= pokemons.size - loadThreshold) {
+                                if (!requestIsSend) {
+                                    mainViewModel.fetchPokemons(loadThreshold, start)
+                                    start += loadThreshold
+                                    requestIsSend = true
+                                }
+                            } else {
+                                requestIsSend = false
                             }
+                            PokemonCard(pokemons[it])
                         }
-                        else{
-                            requestIsSend = false
-                        }
-                        PokemonCard(pokemons[it])
+                        item { Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(25.dp)) }
                     }
-                    item{ Spacer(modifier = Modifier.fillMaxWidth().height(25.dp)) }
+                }
+                else{
+                    LoadingGif()
                 }
             }
         }
@@ -160,5 +171,30 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    @Composable
+    fun LoadingGif(){
+        val imageLoader = ImageLoader.Builder(this)
+            .components{
+                if(Build.VERSION.SDK_INT >= 28){
+                    add(ImageDecoderDecoder.Factory())
+                }
+                else{
+                    add(GifDecoder.Factory())
+                }
+            }
+            .build()
+        val painter = rememberAsyncImagePainter(
+            ImageRequest.Builder(this).data(R.drawable.loading).build(), imageLoader=imageLoader
+        )
+        Image(
+            modifier = Modifier
+                .background(background)
+                .size(96.dp),
+            painter=painter,
+            contentDescription = null,
+            contentScale = ContentScale.None
+        )
     }
 }
