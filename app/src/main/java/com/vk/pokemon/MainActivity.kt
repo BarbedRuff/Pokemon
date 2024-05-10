@@ -1,11 +1,13 @@
 package com.vk.pokemon
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Surface
@@ -24,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
@@ -52,11 +56,11 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier
                     .background(background)
                     .padding(horizontal = 15.dp)
+                    .fillMaxSize()
             ) {
                 LazyColumn(
                     modifier = Modifier
                         .background(background)
-                        .padding(bottom = 20.dp)
                 ) {
                     items(pokemons.size) {
                         if (it >= pokemons.size - loadThreshold) {
@@ -71,6 +75,7 @@ class MainActivity : ComponentActivity() {
                         }
                         PokemonCard(pokemons[it])
                     }
+                    item{ Spacer(modifier = Modifier.fillMaxWidth().height(15.dp)) }
                 }
             }
         }
@@ -83,15 +88,23 @@ class MainActivity : ComponentActivity() {
                 .data(pokemon.sprite)
                 .build()
         )
+
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(20.dp)
+                .height(15.dp)
         )
         Card(
+            shape = RoundedCornerShape(20.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(background),
+                .background(background)
+                .clip(RoundedCornerShape(20.dp))
+                .clickable {
+                    val intent = Intent(this, PokemonActivity::class.java)
+                    intent.putExtra("pokemon", pokemon)
+                    startActivity(intent)
+                },
             colors = CardDefaults.cardColors(
                 containerColor = card,
             )
@@ -134,7 +147,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .fillMaxSize()
-                        .padding(end=10.dp),
+                        .padding(end = 10.dp),
                     text = "${pokemon.baseExperience}",
                     fontSize = 35.sp,
                     color = Color.Blue,

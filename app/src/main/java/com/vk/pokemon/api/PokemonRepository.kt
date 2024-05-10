@@ -17,7 +17,7 @@ class PokemonRepository {
                 pokemons.add(
                     Pokemon(
                         pokemon.id,
-                        pokemon.name,
+                        pokemon.name.replaceFirst(pokemon.name[0], pokemon.name[0].uppercaseChar()),
                         pokemon.sprites.frontDefault,
                         pokemon.height,
                         pokemon.weight,
