@@ -12,3 +12,7 @@ val Pink40 = Color(0xFF7D5260)
 
 val card = Color(0xFFECE5C7)
 val background = Color(0xFFC2DED1)
+val statCard = Color(0xFFB1AD9C)
+
+val progressBarBackground = Color(0xFFD9D9D9)
+val progressBarFill = Color(0xFF998941)

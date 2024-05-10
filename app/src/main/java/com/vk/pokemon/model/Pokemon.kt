@@ -16,4 +16,6 @@ data class Pokemon(
     val weight: Int,
     @SerializedName("baseExperience")
     val baseExperience: Int,
+    @SerializedName("stats")
+    val stats: List<Float>
 ): Serializable

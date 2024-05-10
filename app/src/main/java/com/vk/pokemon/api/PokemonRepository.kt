@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flow
 
 class PokemonRepository {
     private val api: PokemonApi by lazy { Retrofit.getClient().create(PokemonApi::class.java) }
+    private val maxStats = listOf(255, 181, 230, 173, 230, 200)
 
     suspend fun getPokemons(listSize: Int, start: Int): Flow<List<Pokemon>>{
         val pokemons = mutableListOf<Pokemon>()
@@ -21,7 +22,8 @@ class PokemonRepository {
                         pokemon.sprites.frontDefault,
                         pokemon.height,
                         pokemon.weight,
-                        pokemon.baseExperience
+                        pokemon.baseExperience,
+                        (0..5).map{ pokemon.stats[it].baseStat / maxStats[it].toFloat() }
                     )
                 )
             } catch (e: Exception){
