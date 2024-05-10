@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
         val mainViewModel: PokemonViewModel by viewModels()
         val loadThreshold = 10
         var start = 1
+        var requestIsSend = false
         setContent {
             val pokemons by mainViewModel.pokemons.collectAsState()
             mainViewModel.fetchPokemons(loadThreshold, start)
@@ -52,17 +53,22 @@ class MainActivity : ComponentActivity() {
                     .background(background)
                     .padding(horizontal = 15.dp)
             ) {
-                LazyColumn(modifier = Modifier.background(background).padding(bottom = 5.dp)) {
+                LazyColumn(
+                    modifier = Modifier
+                        .background(background)
+                        .padding(bottom = 20.dp)
+                ) {
                     items(pokemons.size) {
                         if (it >= pokemons.size - loadThreshold) {
-                            mainViewModel.fetchPokemons(loadThreshold, start)
-                            start += loadThreshold
+                            if(!requestIsSend){
+                                mainViewModel.fetchPokemons(loadThreshold, start)
+                                start += loadThreshold
+                                requestIsSend = true
+                            }
                         }
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(20.dp)
-                        )
+                        else{
+                            requestIsSend = false
+                        }
                         PokemonCard(pokemons[it])
                     }
                 }
@@ -76,6 +82,11 @@ class MainActivity : ComponentActivity() {
             model = ImageRequest.Builder(LocalContext.current)
                 .data(pokemon.sprite)
                 .build()
+        )
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(20.dp)
         )
         Card(
             modifier = Modifier
