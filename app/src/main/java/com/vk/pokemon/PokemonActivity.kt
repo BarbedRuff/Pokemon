@@ -1,7 +1,6 @@
 package com.vk.pokemon
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -17,10 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -57,35 +56,36 @@ class PokemonActivity : ComponentActivity() {
                     .data(pokemon.sprite)
                     .build()
             )
-            Surface(
+            LazyColumn(
                 modifier = Modifier
                     .background(card)
                     .padding(horizontal = 15.dp, vertical = 15.dp)
                     .fillMaxSize()
             ){
-                Column(modifier=Modifier
-                    .background(card)
-                    .fillMaxWidth()
-                ) {
-                    Image(
-                        painter = painter,
-                        contentDescription = null,
+                item{
+                    Text(
                         modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .size(200.dp)
-                            .padding(top=25.dp)
+                            .fillMaxWidth(),
+                        text = pokemon.name,
+                        fontFamily = itimFamily,
+                        fontSize = 30.sp,
+                        textAlign = TextAlign.Center
                     )
-                    BaseCard(pokemon)
-                    StatsCard(pokemon)
+                    Column(modifier=Modifier
+                        .background(card)
+                        .fillMaxWidth()
+                    ) {
+                        Image(
+                            painter = painter,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .size(150.dp)
+                        )
+                        BaseCard(pokemon)
+                        StatsCard(pokemon)
+                    }
                 }
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    text = pokemon.name,
-                    fontFamily = itimFamily,
-                    fontSize = 30.sp,
-                    textAlign = TextAlign.Center
-                )
             }
         }
     }
