@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val mainViewModel: PokemonViewModel by viewModels()
-        val loadThreshold = 10
+        val loadThreshold = 30
         setContent {
             val pokemons by mainViewModel.pokemons.collectAsState()
             val state by mainViewModel.state.collectAsState()
