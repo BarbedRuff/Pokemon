@@ -1,6 +1,5 @@
 package com.vk.pokemon.api
 
-import android.util.Log
 import com.vk.pokemon.core.Retrofit
 import com.vk.pokemon.model.Pokemon
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +26,7 @@ class PokemonRepository {
                     )
                 )
             } catch (e: Exception){
-                Log.d("Pokemon Error", e.message.toString())
+                throw e
             }
         }
         return flow{ emit(pokemons) }

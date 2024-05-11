@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Surface
@@ -46,6 +49,7 @@ import coil.request.ImageRequest
 import com.vk.pokemon.model.Pokemon
 import com.vk.pokemon.ui.theme.background
 import com.vk.pokemon.ui.theme.card
+import com.vk.pokemon.ui.theme.statCard
 
 class MainActivity : ComponentActivity() {
      val itimFamily = FontFamily(
@@ -55,42 +59,51 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val mainViewModel: PokemonViewModel by viewModels()
         val loadThreshold = 10
-        var start = 1
-        var requestIsSend = false
         setContent {
             val pokemons by mainViewModel.pokemons.collectAsState()
-            mainViewModel.fetchPokemons(loadThreshold, start)
-            start += loadThreshold
+            val state by mainViewModel.state.collectAsState()
+            mainViewModel.fetchPokemons(loadThreshold)
             Surface(
                 modifier = Modifier
                     .background(background)
                     .padding(horizontal = 15.dp)
                     .fillMaxSize()
             ) {
-                if(pokemons.isNotEmpty()) {
+                if(state == "Init"){
+                    LoadingGif()
+                }
+                else if(state == "Error" && pokemons.isEmpty()){
+                    RetryButton { mainViewModel.fetchPokemons(loadThreshold) }
+                }
+                else{
                     LazyColumn(
                         modifier = Modifier
                             .background(background)
                     ) {
                         items(pokemons.size) {
                             if (it >= pokemons.size - loadThreshold) {
-                                if (!requestIsSend) {
-                                    mainViewModel.fetchPokemons(loadThreshold, start)
-                                    start += loadThreshold
-                                    requestIsSend = true
-                                }
-                            } else {
-                                requestIsSend = false
+                                mainViewModel.fetchPokemons(loadThreshold)
                             }
                             PokemonCard(pokemons[it])
                         }
-                        item { Spacer(modifier = Modifier
-                            .fillMaxWidth()
-                            .height(25.dp)) }
+                        item {
+                            Spacer(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(25.dp)
+                            )
+                            if(state == "Error"){
+                                RetryButton{
+                                    mainViewModel.fetchPokemons(loadThreshold)
+                                }
+                                Spacer(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(25.dp)
+                                )
+                            }
+                        }
                     }
-                }
-                else{
-                    LoadingGif()
                 }
             }
         }
@@ -188,13 +201,35 @@ class MainActivity : ComponentActivity() {
         val painter = rememberAsyncImagePainter(
             ImageRequest.Builder(this).data(R.drawable.loading).build(), imageLoader=imageLoader
         )
-        Image(
-            modifier = Modifier
-                .background(background)
-                .size(96.dp),
-            painter=painter,
-            contentDescription = null,
-            contentScale = ContentScale.None
-        )
+        Box(modifier = Modifier.background(background)){
+            Image(
+                modifier = Modifier
+                    .size(96.dp)
+                    .align(Alignment.Center),
+                painter=painter,
+                contentDescription = null,
+                contentScale = ContentScale.None
+            )
+        }
+    }
+
+    @Composable
+    fun RetryButton(onClick: () -> Unit){
+        Box(modifier= Modifier
+            .fillMaxWidth()
+            .background(background)){
+            Button(
+                onClick = onClick,
+                modifier=Modifier
+                    .align(Alignment.Center),
+                colors = ButtonDefaults.buttonColors(containerColor = statCard)
+            ){
+                Text(
+                    text = "Retry",
+                    fontFamily = itimFamily,
+                    fontSize = 20.sp
+                )
+            }
+        }
     }
 }
