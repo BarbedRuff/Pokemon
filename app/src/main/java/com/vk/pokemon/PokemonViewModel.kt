@@ -14,20 +14,30 @@ import kotlinx.coroutines.launch
 
 class PokemonViewModel: ViewModel() {
     private val _pokemons = MutableStateFlow(listOf<Pokemon>())
+    private val _state = MutableStateFlow("")
     private val repository = PokemonRepository()
+    private var start = 1
     var pokemons = _pokemons.asStateFlow()
-    fun fetchPokemons(listSize: Int, start: Int){
-        viewModelScope.launch {
-            repository.getPokemons(listSize, start)
-                .flowOn(Dispatchers.IO)
-                .catch{
-                    Log.d("Pokemon Error", it.message.toString())
+    var state = _state.asStateFlow()
+    fun fetchPokemons(listSize: Int){
+        if(_state.value != "Loading"){
+            _state.value = if(start != 1) "Loading" else "Init"
+            viewModelScope.launch {
+                try{
+                    repository.getPokemons(listSize, start)
+                        .flowOn(Dispatchers.IO)
+                        .collect{
+                            _state.value = "Loaded"
+                            val pokemonsList = _pokemons.value.toMutableList()
+                            pokemonsList.addAll(it)
+                            start = pokemonsList.last().id + 1
+                            _pokemons.value = pokemonsList.toList()
+                        }
+                } catch (e: Exception){
+                    _state.value = "Error"
+                    Log.d("Loading error", e.message.toString())
                 }
-                .collect{
-                    val pokemonsList = _pokemons.value.toMutableList()
-                    pokemonsList.addAll(it)
-                    _pokemons.value = pokemonsList.toList()
-                }
+            }
         }
     }
 }
